@@ -1,0 +1,45 @@
+import type { RequestEvent } from "@sveltejs/kit";
+
+export const emojiList = [
+    '😀', '😂', '😅', '😊', '😍', '😎', '😜', '🤔', '😢', '😭',
+    '😡', '🤯', '🤗', '😷', '🤒', '🤑', '🤓', '🤠', '🥳', '🥺',
+    '🤩', '🤪', '😇', '🤤', '😴', '😵', '🤖', '👻', '👽', '💀'
+];
+
+export const options = {
+    headers: {
+        'Content-Type': 'application/json',
+    },
+};
+
+export const generateUUID = (): string => {
+    let d = new Date().getTime(); // Timestamp
+    let d2 = (typeof performance !== 'undefined' && performance.now && (performance.now() * 1000)) || 0; // Performance now to ensure randomness
+
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        let r = Math.random() * 16; // Random number between 0 and 16
+        if (d > 0) {
+            r = (d + r) % 16 | 0;
+            d = Math.floor(d / 16);
+        } else {
+            r = (d2 + r) % 16 | 0;
+            d2 = Math.floor(d2 / 16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
+
+export const getRandomEmoji = (): string => {
+
+    const randomIndex = Math.floor(Math.random() * emojiList.length);
+    return emojiList[randomIndex];
+};
+
+export const getUUIDs = async (e: RequestEvent): Promise<string[]> => {
+    return await e.platform?.env.contactpagekv.get("uuids").then((uuids) => {
+        if (uuids)
+            return JSON.parse(uuids);
+        else
+            return [];
+    });
+};

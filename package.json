@@ -18,6 +18,7 @@
     "@cloudflare/workers-types": "^4.20240821.1",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/adapter-cloudflare": "^4.7.2",
+    "@sveltejs/adapter-cloudflare-workers": "^2.5.4",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@types/eslint": "^9.6.0",
