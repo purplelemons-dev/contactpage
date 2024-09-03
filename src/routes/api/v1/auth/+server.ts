@@ -2,9 +2,9 @@ import { type RequestHandler } from '@sveltejs/kit';
 import { options, getRandomEmoji, generateUUID, getUUIDs } from '$lib';
 
 
-export const GET: RequestHandler = async (e) => {
+export const POST: RequestHandler = async (e) => {
     // We're checking the current auth emoji
-    const emoji = e.url.searchParams.get('emoji');
+    const emoji = (await e.request.json() as { selectedEmoji?: string }).selectedEmoji || "";
     const authEmoji = await e.platform?.env.contactpagekv.get("auth-emoji");
 
     const matches = emoji === authEmoji;
@@ -21,7 +21,6 @@ export const GET: RequestHandler = async (e) => {
         const uuids = await getUUIDs(e);
         uuids.push(uuid);
         await e.platform?.env.contactpagekv.put("uuids", JSON.stringify(uuids));
-
     }
 
     return new Response(JSON.stringify({ matches, uuid }), { ...options, status: matches ? 200 : 400 });

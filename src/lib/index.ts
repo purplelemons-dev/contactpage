@@ -43,3 +43,9 @@ export const getUUIDs = async (e: RequestEvent): Promise<string[]> => {
             return [];
     });
 };
+
+export const removeUUID = async (e: RequestEvent, uuid: string): Promise<void> => {
+    const uuids = await getUUIDs(e);
+    const newUUIDs = uuids.filter((id: string) => id !== uuid);
+    await e.platform?.env.contactpagekv.put("uuids", JSON.stringify(newUUIDs));
+}

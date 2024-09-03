@@ -11,6 +11,8 @@ bucket = "./.svelte-kit/cloudflare"
 binding = "contactpagekv"
 id = "8515cbe5ec4841fe985a342cd5560177"
 
+[vars]
+
 # Automatically place your workloads in an optimal location to minimize latency.
 # If you are running back-end logic in a Pages Function, running it closer to your back-end infrastructure
 # rather than the end user may result in better performance.

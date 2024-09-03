@@ -1,5 +1,5 @@
-import { type RequestHandler } from '@sveltejs/kit';
-import { options, getRandomEmoji } from '$lib';
+import { type RequestHandler } from "@sveltejs/kit";
+import { options, getRandomEmoji } from "$lib";
 
 export const GET: RequestHandler = async (e) => {
     let authEmoji = await e.platform?.env.contactpagekv.get("auth-emoji");
@@ -17,24 +17,27 @@ export const GET: RequestHandler = async (e) => {
         }
     });
 
-    // Get the current IP address
-    let ip = e.request.headers.get("cf-connecting-ip");
-    if (!ip) {
-        return new Response(JSON.stringify({ error: "No IP address provided" }), { ...options, status: 400 });
+    const host = e.request.headers.get("host")?.split(":")[0] || "";
+
+    if (!["localhost", "127.0.0.1"].includes(host)) {
+        // Get the current IP address
+        let ip = e.request.headers.get("cf-connecting-ip");
+        if (!ip) {
+            return new Response(JSON.stringify({ error: "No IP address provided" }), { ...options, status: 400 });
+        }
+
+        // Check if the IP is on cooldown
+        if (cooldowns[ip] && cooldowns[ip] > Date.now()) {
+            return new Response(JSON.stringify({ error: "On cooldown" }), { ...options, status: 429 });
+        }
+
+        // Set the cooldown for the IP for 5m
+        cooldowns[ip] = Date.now() + 300000;
+        await e.platform?.env.contactpagekv.put("cooldowns", JSON.stringify(cooldowns));
     }
-
-    // Check if the IP is on cooldown
-    if (cooldowns[ip] && cooldowns[ip] > Date.now()) {
-        return new Response(JSON.stringify({ error: "On cooldown" }), { ...options, status: 429 });
-    }
-
-    // Set the cooldown for the IP for 
-    cooldowns[ip] = Date.now() + 30000;
-    await e.platform?.env.contactpagekv.put("cooldowns", JSON.stringify(cooldowns));
-
 
     const out: string[] = [authEmoji];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
         let newEmoji = getRandomEmoji();
         while (newEmoji === authEmoji || out.includes(newEmoji)) {
             newEmoji = getRandomEmoji();
