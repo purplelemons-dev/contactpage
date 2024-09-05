@@ -1,45 +1,32 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 
-	let auth_token: string | null = null;
-	let url: string | null = null;
+	export let data;
 
-	onMount(() => {
-		auth_token = localStorage.getItem("auth_token");
-		url = window.location.pathname;
+	let auth_token: string = "";
+
+	onMount(async () => {
+		const token = document.cookie
+			.split("; ")
+			.find((row) => row.startsWith("auth_token="))
+			?.split("=")[1];
+		if (token) {
+			auth_token = token;
+			authTokenSet = true;
+		}
 	});
 
-	let authTokenSet = auth_token !== null;
+	let authTokenSet = false;
 
 	const saveToken = async () => {
 		if (auth_token) {
-			localStorage.setItem("auth_token", auth_token);
+			const time = new Date();
+			// 180 days
+			time.setTime(time.getTime() + 180 * 24 * 60 * 60 * 1000);
+			const formattedTime = time.toUTCString();
+			document.cookie = `auth_token=${auth_token}; Expires=${formattedTime}; path=/`;
 			authTokenSet = true;
-		}
-	};
-
-	const emoji = async () => {
-		if (url && auth_token) {
-			return await fetch(url, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({ auth_token })
-			})
-				.then(async (res) => {
-					if (res.ok) {
-						return (await res.json()) as { currentEmoji: string };
-					}
-					throw new Error("Failed to fetch");
-				})
-				.catch((err) => {
-					console.error(err);
-					auth_token = null;
-					localStorage.removeItem("auth_token");
-					authTokenSet = false;
-					return { currentEmoji: null, err };
-				});
+			location.reload();
 		}
 	};
 
@@ -56,6 +43,7 @@
 		on:keypress={(e) => {
 			if (e.key === "Enter") {
 				saveToken();
+				authTokenSet = true;
 			}
 		}}
 		id="auth-token"
@@ -65,8 +53,9 @@
 	<div class="topbar">
 		<button
 			on:click={() => {
-				auth_token = null;
-				localStorage.removeItem("auth_token");
+				auth_token = "";
+				document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+				auth_token = "";
 				authTokenSet = false;
 				location.reload();
 			}}
@@ -75,15 +64,8 @@
 		</button>
 	</div>
 	<div class="dashboard">
-		<h1>
-			{#await emoji()}
-				<p>loading...</p>
-			{:then data}
-				{data?.currentEmoji}
-			{:catch error}
-				<p>{error}</p>
-			{/await}
-		</h1>
+		<h1>{data.currentEmoji}</h1>
+		<h3>{data.status}</h3>
 	</div>
 {/if}
 
