@@ -59,7 +59,7 @@ interface LoginIP {
 
 export const addLogin = async (ip: string, kv: KVNamespace | undefined, success: boolean, type: LoginIP["type"]) => {
     if (kv) {
-        const loginIPs: { [ip: string]: LoginIP } = JSON.parse(await kv.get("login-ips") || "[]");
+        const loginIPs: { [ip: string]: LoginIP } = JSON.parse(await kv.get("login-ips") || "{}");
 
         const time = Date.now();
         const count = loginIPs[ip] ? `${parseInt(loginIPs[ip].count) + 1}` : "1";
