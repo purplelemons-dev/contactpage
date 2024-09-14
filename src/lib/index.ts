@@ -52,17 +52,17 @@ export const removeUUID = async (e: RequestEvent, uuid: string): Promise<void> =
 
 interface LoginIP {
     time: number;
-    success: boolean;
-    count: string;
-    type: "card_download" | "admin"
+    success: number;
+    count: number;
+    type: "card_download" | "admin";
 };
 
 export const addLogin = async (ip: string, kv: KVNamespace | undefined, success: boolean, type: LoginIP["type"]) => {
     if (kv) {
-        const loginIPs: { [ip: string]: LoginIP } = JSON.parse(await kv.get("login-ips") || "{}");
+        const loginIPs: { [key: string]: LoginIP } = JSON.parse(await kv.get("login-ips") || "{}");
 
         const time = Date.now();
-        const count = loginIPs[ip] ? `${parseInt(loginIPs[ip].count) + 1}` : "1";
+        const count = loginIPs[ip] ? loginIPs[ip].count + 1 : 1;
 
         await kv.put("login-ips", JSON.stringify({ ...loginIPs, [ip]: { time, success, count, type } }));
         return loginIPs;
