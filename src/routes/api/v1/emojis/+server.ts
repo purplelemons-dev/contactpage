@@ -2,14 +2,19 @@ import { type RequestHandler } from "@sveltejs/kit";
 import { options, getRandomEmoji } from "$lib";
 
 export const GET: RequestHandler = async (e) => {
-    let authEmoji = await e.platform?.env.contactpagekv.get("auth-emoji");
+    const contactPage = e.platform?.env.contactpagekv;
+    if (!contactPage) {
+        return new Response(JSON.stringify({ error: "No contactpagekv" }), { ...options, status: 500 });
+    }
+
+    let authEmoji = await contactPage.get("auth-emoji");
     if (!authEmoji) {
         authEmoji = getRandomEmoji();
-        await e.platform?.env.contactpagekv.put("auth-emoji", authEmoji);
+        await contactPage.put("auth-emoji", authEmoji);
     }
 
     // Get contactpagekv["cooldowns"] which is an object mapping IPs to timestamps
-    const cooldowns: { [key: string]: number } = await e.platform?.env.contactpagekv.get("cooldowns").then((cooldowns) => {
+    const cooldowns: { [key: string]: number } = await contactPage.get("cooldowns").then((cooldowns) => {
         if (cooldowns) {
             return JSON.parse(cooldowns);
         } else {
@@ -33,7 +38,7 @@ export const GET: RequestHandler = async (e) => {
 
         // Set the cooldown for the IP for 5m
         cooldowns[ip] = Date.now() + 300000;
-        await e.platform?.env.contactpagekv.put("cooldowns", JSON.stringify(cooldowns));
+        await contactPage.put("cooldowns", JSON.stringify(cooldowns));
     }
 
     const out: string[] = [authEmoji];

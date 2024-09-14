@@ -49,3 +49,30 @@ export const removeUUID = async (e: RequestEvent, uuid: string): Promise<void> =
     const newUUIDs = uuids.filter((id: string) => id !== uuid);
     await e.platform?.env.contactpagekv.put("uuids", JSON.stringify(newUUIDs));
 }
+
+interface LoginIP {
+    ip: string;
+    time: number;
+    success: boolean;
+    count: string;
+    type: "card_download" | "admin"
+};
+
+export const addLogin = async (ip: string, kv: KVNamespace | undefined, success: boolean, type: LoginIP["type"]) => {
+    if (kv) {
+        const loginIPs: LoginIP[] = JSON.parse(await kv.get("login-ips") || "[]");
+
+        const time = Date.now();
+        const count = loginIPs.filter((login) => login.ip === ip).length.toString();
+
+        await kv.put("login-ips", JSON.stringify([...loginIPs, {
+            ip,
+            time,
+            success,
+            count,
+            type
+        }]));
+        return loginIPs;
+    }
+    return [];
+}
