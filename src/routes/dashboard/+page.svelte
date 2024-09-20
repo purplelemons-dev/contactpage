@@ -68,8 +68,7 @@
 		<h3>{data.status}</h3>
 	</div>
 	<div>
-		<h4>Logins</h4>
-		<table style="font-size: 5rem;">
+		<table style="font-size: 1rem;">
 			<tr>
 				<th>Time</th>
 				<th>IP</th>
@@ -83,12 +82,12 @@
 			</tr>
 			{#each Object.entries(data.loginIPs) as [ip, login]}
 				<tr>
-					<td>{login.time}</td>
+					<td>{new Date(login.time).toLocaleString()}</td>
 					<td>{ip}</td>
 					<td
 						><div style="color: greenyellow;">{login.success}</div>
 						/
-						<div style="color: red;">{login.success - login.count}</div></td
+						<div style="color: red;">{login.count - login.success}</div></td
 					>
 					<td>{login.count}</td>
 					<td>{login.type}</td>

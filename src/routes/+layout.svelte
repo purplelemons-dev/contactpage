@@ -9,6 +9,6 @@
 		align-items: center;
 		justify-content: center;
 		height: 100vh;
-		font-size: 12rem;
+		font-size: 6rem;
 	}
 </style>
