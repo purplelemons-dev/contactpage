@@ -19,6 +19,7 @@ export const load = async (e) => {
             return {
                 status: 200,
                 currentEmoji: "",
+                loginIPs: {},
                 auth_token
             };
         } else {
@@ -26,6 +27,7 @@ export const load = async (e) => {
             return {
                 status: 401,
                 currentEmoji: "",
+                loginIPs: {},
                 auth_token
             };
         }

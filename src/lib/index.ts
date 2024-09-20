@@ -62,10 +62,14 @@ export const addLogin = async (ip: string, kv: KVNamespace | undefined, success:
         const loginIPs: { [key: string]: LoginIP } = JSON.parse(await kv.get("login-ips") || "{}");
 
         const time = Date.now();
+        let successCount = loginIPs[ip] ? loginIPs[ip].success : 0;
+        if (success) {
+            successCount++;
+        }
         const count = loginIPs[ip] ? loginIPs[ip].count + 1 : 1;
 
-        await kv.put("login-ips", JSON.stringify({ ...loginIPs, [ip]: { time, success, count, type } }));
+        await kv.put("login-ips", JSON.stringify({ ...loginIPs, [ip]: { time, success: successCount, count, type } }));
         return loginIPs;
     }
-    return [];
+    return {};
 }

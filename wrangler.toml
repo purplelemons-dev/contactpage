@@ -7,6 +7,9 @@ main = "./.svelte-kit/cloudflare/_worker.js"
 [site]
 bucket = "./.svelte-kit/cloudflare"
 
+[placement]
+mode = "smart"
+
 [[kv_namespaces]]
 binding = "contactpagekv"
 id = "8515cbe5ec4841fe985a342cd5560177"

@@ -28,7 +28,8 @@ export const POST: RequestHandler = async (e) => {
         const uuids = await getUUIDs(e);
         uuids.push(uuid);
         await contactPage.put("uuids", JSON.stringify(uuids));
-        await addLogin(ip, contactPage, true, "card_download");
+        const testvar = await addLogin(ip, contactPage, true, "card_download");
+        console.log(testvar);
         return new Response(JSON.stringify({ matches, uuid }), { ...options, status: 200 });
     } else {
         await addLogin(ip, contactPage, false, "card_download");
