@@ -69,7 +69,7 @@
 	</div>
 	<div>
 		<h4>Logins</h4>
-		<table>
+		<table style="font-size: 5rem;">
 			<tr>
 				<th>Time</th>
 				<th>IP</th>
