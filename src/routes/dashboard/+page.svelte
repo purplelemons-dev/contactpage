@@ -36,79 +36,163 @@
 <title>Login</title>
 
 {#if !authTokenSet}
-	<input
-		type="password"
-		name="auth-token"
-		bind:value={auth_token}
-		on:keypress={(e) => {
-			if (e.key === "Enter") {
-				saveToken();
-				authTokenSet = true;
-			}
-		}}
-		id="auth-token"
-	/>
-	<button on:click={saveToken}>Submit</button>
-{:else}
-	<div class="topbar">
-		<button
-			on:click={() => {
-				auth_token = "";
-				document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-				auth_token = "";
-				authTokenSet = false;
-				location.reload();
+	<div class="container">
+		<input
+			type="password"
+			name="auth-token"
+			bind:value={auth_token}
+			on:keypress={(e) => {
+				if (e.key === "Enter") {
+					saveToken();
+					authTokenSet = true;
+				}
 			}}
-		>
-			signout
-		</button>
+			id="auth-token"
+		/>
+		<button on:click={saveToken}>Submit</button>
 	</div>
-	<div class="dashboard">
-		<h1>{data.currentEmoji}</h1>
-		<h3>{data.status}</h3>
-		<div>
-			<table style="font-size: 1rem;">
-				<tr>
-					<th>Time</th>
-					<th>IP</th>
-					<th
-						><div style="color: greenyellow;">S</div>
-						/
-						<div style="color: red;">F</div></th
-					>
-					<th>Total #</th>
-					<th>Type</th>
-				</tr>
-				{#each Object.entries(data.loginIPs) as [ip, login]}
+{:else}
+	<div class="container">
+		<div class="topbar">
+			<button
+				on:click={() => {
+					auth_token = "";
+					document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+					auth_token = "";
+					authTokenSet = false;
+					location.reload();
+				}}
+			>
+				signout
+			</button>
+		</div>
+		<div class="dashboard">
+			<div class="emoji-container">
+				<h1>{data.currentEmoji}</h1>
+			</div>
+			<h3>{data.status}</h3>
+			<div class="table-container">
+				<table>
 					<tr>
-						<td>{new Date(login.time).toLocaleString()}</td>
-						<td>{ip}</td>
-						<td
-							><div style="color: greenyellow;">{login.success}</div>
+						<th>Time</th>
+						<th>IP</th>
+						<th>
+							<div class="success">S</div>
 							/
-							<div style="color: red;">{login.count - login.success}</div></td
-						>
-						<td>{login.count}</td>
-						<td>{login.type}</td>
+							<div class="failure">F</div>
+						</th>
+						<th>Total #</th>
+						<th>Type</th>
 					</tr>
-				{/each}
-			</table>
+					{#each Object.entries(data.loginIPs) as [ip, login]}
+						<tr>
+							<td>{new Date(login.time).toLocaleString()}</td>
+							<td>{ip}</td>
+							<td>
+								<div class="success">{login.success}</div>
+								/
+								<div class="failure">{login.count - login.success}</div>
+							</td>
+							<td>{login.count}</td>
+							<td>{login.type}</td>
+						</tr>
+					{/each}
+				</table>
+			</div>
 		</div>
 	</div>
-	
 {/if}
 
 <style>
-	:host {
+	:global(body) {
+		margin: 0;
+		padding: 0;
+		min-height: 100vh;
+		width: 100%;
+	}
+
+	.container {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		min-height: 100vh;
+		padding: 1rem;
+		box-sizing: border-box;
+	}
+
+	.topbar {
+		width: 100%;
+		padding: 0.5rem;
+		box-sizing: border-box;
+	}
+
+	.dashboard {
+		flex: 1;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
-		height: 100vh;
+		width: 100%;
+		padding: 1rem;
+		gap: 1rem;
+		box-sizing: border-box;
+	}
+
+	.emoji-container {
+		width: 100%;
+		text-align: center;
+		padding: 1rem;
+		box-sizing: border-box;
+	}
+
+	.emoji-container h1 {
+		margin: 0;
+		font-size: clamp(2rem, 10vw, 6rem);
+	}
+
+	.table-container {
+		width: 100%;
+		overflow-x: auto;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
 		font-size: 1rem;
 	}
+
+	th,
+	td {
+		padding: 0.5rem;
+		text-align: left;
+	}
+
+	.success {
+		color: greenyellow;
+		display: inline;
+	}
+
+	.failure {
+		color: red;
+		display: inline;
+	}
+
 	button {
 		font-size: 1rem;
-		size: 1rem;
+		padding: 0.5rem 1rem;
+	}
+
+	@media (max-width: 768px) {
+		.container {
+			padding: 0.5rem;
+		}
+
+		table {
+			font-size: 0.875rem;
+		}
+
+		th,
+		td {
+			padding: 0.25rem;
+		}
 	}
 </style>
