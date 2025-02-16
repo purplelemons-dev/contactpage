@@ -11,26 +11,35 @@ export const load = async (e) => {
         return {
             status: 200,
             currentEmoji: await e.platform?.env.contactpagekv.get("auth-emoji"),
-            loginIPs: await addLogin(e.request.headers.get("cf-connecting-ip") || "", kv, true, "admin"),
-            auth_token
-        }
+            loginIPs: await addLogin(
+                e.request.headers.get("cf-connecting-ip") || "",
+                kv,
+                true,
+                "admin",
+            ),
+            auth_token,
+        };
     } else {
         if (["localhost", "127.0.0.1"].includes(host) && auth_token) {
             return {
                 status: 200,
                 currentEmoji: "",
                 loginIPs: {},
-                auth_token
+                auth_token,
             };
         } else {
-            await addLogin(e.request.headers.get("cf-connecting-ip") || "", kv, false, "admin");
+            await addLogin(
+                e.request.headers.get("cf-connecting-ip") || "",
+                kv,
+                false,
+                "admin",
+            );
             return {
                 status: 401,
                 currentEmoji: "",
                 loginIPs: {},
-                auth_token
+                auth_token,
             };
         }
     }
-
 };

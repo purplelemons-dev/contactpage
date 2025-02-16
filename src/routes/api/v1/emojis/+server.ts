@@ -1,10 +1,13 @@
 import { type RequestHandler } from "@sveltejs/kit";
-import { options, getRandomEmoji } from "$lib";
+import { getRandomEmoji, options } from "$lib";
 
 export const GET: RequestHandler = async (e) => {
     const contactPage = e.platform?.env.contactpagekv;
     if (!contactPage) {
-        return new Response(JSON.stringify({ error: "No contactpagekv" }), { ...options, status: 500 });
+        return new Response(JSON.stringify({ error: "No contactpagekv" }), {
+            ...options,
+            status: 500,
+        });
     }
 
     let authEmoji = await contactPage.get("auth-emoji");
@@ -14,7 +17,9 @@ export const GET: RequestHandler = async (e) => {
     }
 
     // Get contactpagekv["cooldowns"] which is an object mapping IPs to timestamps
-    const cooldowns: { [key: string]: number } = await contactPage.get("cooldowns").then((cooldowns) => {
+    const cooldowns: { [key: string]: number } = await contactPage.get(
+        "cooldowns",
+    ).then((cooldowns) => {
         if (cooldowns) {
             return JSON.parse(cooldowns);
         } else {
@@ -28,12 +33,18 @@ export const GET: RequestHandler = async (e) => {
         // Get the current IP address
         let ip = e.request.headers.get("cf-connecting-ip");
         if (!ip) {
-            return new Response(JSON.stringify({ error: "No IP address provided" }), { ...options, status: 400 });
+            return new Response(
+                JSON.stringify({ error: "No IP address provided" }),
+                { ...options, status: 400 },
+            );
         }
 
         // Check if the IP is on cooldown
         if (cooldowns[ip] && cooldowns[ip] > Date.now()) {
-            return new Response(JSON.stringify({ error: "On cooldown" }), { ...options, status: 429 });
+            return new Response(JSON.stringify({ error: "On cooldown" }), {
+                ...options,
+                status: 429,
+            });
         }
 
         // Set the cooldown for the IP for 5m
