@@ -66,35 +66,36 @@
 	<div class="dashboard">
 		<h1>{data.currentEmoji}</h1>
 		<h3>{data.status}</h3>
-	</div>
-	<div>
-		<table style="font-size: 1rem;">
-			<tr>
-				<th>Time</th>
-				<th>IP</th>
-				<th
-					><div style="color: greenyellow;">S</div>
-					/
-					<div style="color: red;">F</div></th
-				>
-				<th>Total #</th>
-				<th>Type</th>
-			</tr>
-			{#each Object.entries(data.loginIPs) as [ip, login]}
+		<div>
+			<table style="font-size: 1rem;">
 				<tr>
-					<td>{new Date(login.time).toLocaleString()}</td>
-					<td>{ip}</td>
-					<td
-						><div style="color: greenyellow;">{login.success}</div>
+					<th>Time</th>
+					<th>IP</th>
+					<th
+						><div style="color: greenyellow;">S</div>
 						/
-						<div style="color: red;">{login.count - login.success}</div></td
+						<div style="color: red;">F</div></th
 					>
-					<td>{login.count}</td>
-					<td>{login.type}</td>
+					<th>Total #</th>
+					<th>Type</th>
 				</tr>
-			{/each}
-		</table>
+				{#each Object.entries(data.loginIPs) as [ip, login]}
+					<tr>
+						<td>{new Date(login.time).toLocaleString()}</td>
+						<td>{ip}</td>
+						<td
+							><div style="color: greenyellow;">{login.success}</div>
+							/
+							<div style="color: red;">{login.count - login.success}</div></td
+						>
+						<td>{login.count}</td>
+						<td>{login.type}</td>
+					</tr>
+				{/each}
+			</table>
+		</div>
 	</div>
+	
 {/if}
 
 <style>
